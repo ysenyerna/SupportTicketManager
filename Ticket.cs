@@ -18,13 +18,13 @@ public class Ticket
 	// Constructors
 	public Ticket() : this("", "N/A", PriorityLevel.Low, TicketStatus.Open) {}
 
-	public Ticket(string id, string description, PriorityLevel priority, TicketStatus status)
+	public Ticket(string id, string description, PriorityLevel priority, TicketStatus status, DateTime? dateCreated = null)
 	{
 		ID = id;
 		Description = description;
 		Priority = priority;
 		Status = status;
-		DateCreated = DateTime.Now;
+		DateCreated = dateCreated ?? DateTime.Now;
 	}
 
 	// Methods
