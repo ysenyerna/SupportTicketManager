@@ -1,7 +1,8 @@
 // Class that holds and manages a list of tickets
 
-public class TicketManger
+public class TicketManager
 {
+	const string CommaPlaceholder = "[COMMA]";
 	public List<Ticket> _tickets {get; private set; } = [];
 
 	// Methods
@@ -40,9 +41,10 @@ public class TicketManger
 		return _tickets.Count(t => t.Status == Ticket.TicketStatus.Open);
 	}
 
-	// Saves ticket data to a CSV file at the specified path
-	public void SaveTickets(string path)
+	// Saves ticket data to a CSV file at the specified path, returns false and outputs an error message if unsuccessful
+	public bool SaveTickets(string path, out string errorMessage)
 	{
+		errorMessage = "";
 		List<string> ticketData = [];
 
 		// Add header row
@@ -51,7 +53,10 @@ public class TicketManger
 		// Add each ticket as its own row
 		foreach (Ticket t in _tickets)
 		{
-			string line = $"{t.ID},{t.Description},{t.Priority},{t.Status},{t.DateCreated}";
+			// Replace commas with a placeholder to avoid issues when reading files
+			string id = t.ID.Replace(",", CommaPlaceholder);
+			string description = t.Description.Replace(",", CommaPlaceholder);
+			string line = $"{id},{description},{t.Priority},{t.Status},{t.DateCreated}";
 			ticketData.Add(line);
 		}
 
@@ -63,18 +68,35 @@ public class TicketManger
 				path = Path.Combine(path, "tickets.csv") ;
 
 			File.WriteAllLines(Path.ChangeExtension(path, ".csv"), ticketData);
+			return true;
 		}
 		catch (Exception ex)
 		{
-			Console.WriteLine($"Could not save file: {ex.Message}");
+			errorMessage = $"Could not save file: {ex.Message}";
+			return false;
 		}
 		
 	}
 
-	// Loads ticket data from a CSV file at the specified path
-	public void LoadTickets(string path)
+	// Loads ticket data from a CSV file at the specified path, returns false and outputs an error message if unsuccessful
+	public bool LoadTickets(string path, out string errorMessage)
 	{
-		string[] ticketData = File.ReadAllLines(path);
+		errorMessage = "";
+
+		// Load the file
+		string[] ticketData;
+		try
+		{
+			ticketData = File.ReadAllLines(path);
+		}
+		catch (Exception ex) {
+			errorMessage = $"Failed to load file: {ex.Message}";
+			return false;
+		}
+		
+		_tickets.Clear();
+
+		// Iterate through file data
 		int lineNumber = 1;
 		foreach (string line in ticketData.Skip(1))
 		{
@@ -89,6 +111,10 @@ public class TicketManger
 				Ticket.TicketStatus status = Enum.Parse<Ticket.TicketStatus>(values[3]);
 				DateTime dateCreated = DateTime.Parse(values[4]);
 
+				// Put the commas back in
+				id = id.Replace(CommaPlaceholder, ",");
+				description = description.Replace(CommaPlaceholder, ",");
+
 				// Add the ticket
 				Ticket t = new(id, description, priority, status, dateCreated);
 				AddTicket(t);
@@ -97,10 +123,11 @@ public class TicketManger
 			// Catch value errors
 			catch (Exception ex)
 			{
-				Console.WriteLine($"Skipped line {lineNumber}: {ex.Message}");
+				errorMessage = $"Skipped line {lineNumber}: {ex.Message}";
+				return false;
 			}
 			lineNumber++;
-			
 		}
+		return true;
 	}
 }

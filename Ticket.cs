@@ -7,7 +7,7 @@ public class Ticket
 	// Description 
 	public string Description { get; private set; }
 	// Priority level
-	public enum PriorityLevel { Low, Medium, High }
+	public enum PriorityLevel { Low = 1, Medium = 2, High = 3 }
 	public PriorityLevel Priority { get; private set; }
 	// Status
 	public enum TicketStatus { Open, InProgress, Closed }
