@@ -1,0 +1,53 @@
+// Class for individual support tickets
+
+public class Ticket
+{
+	// Unique identifier
+	public string ID { get; private set; }
+	// Description 
+	public string Description { get; private set; }
+	// Priority level
+	public enum PriorityLevel { Low, Medium, High }
+	public PriorityLevel Priority { get; private set; }
+	// Status
+	public enum TicketStatus { Open, InProgress, Closed }
+	public TicketStatus Status { get; private set; }
+	// Creation date
+	public DateTime DateCreated { get; private set; }
+
+	// Constructors
+	public Ticket() : this("", "N/A", PriorityLevel.Low, TicketStatus.Open) {}
+
+	public Ticket(string id, string description, PriorityLevel priority, TicketStatus status)
+	{
+		ID = id;
+		Description = description;
+		Priority = priority;
+		Status = status;
+		DateCreated = DateTime.Now;
+	}
+
+	// Methods
+
+	// Closes the ticket, returns false if the ticket is already closed
+	public bool CloseTicket()
+	{
+		bool alreadyClosed = Status == TicketStatus.Closed;
+		Status = TicketStatus.Closed;
+		return !alreadyClosed;
+	}
+
+	// Reopens the ticket, returns false if the ticket is already open
+	public bool ReopenTicket()
+	{
+		bool alreadyOpen = Status == TicketStatus.Open;
+		Status = TicketStatus.Open;
+		return !alreadyOpen;
+	}
+
+	// Returns a formatted summary of the ticket
+	public string GetSummary()
+	{
+		return $"[{ID}] ({Priority}) - {Description} | Status: {Status} | Created: {DateCreated:yyyy-MM-dd}";
+	}
+}
