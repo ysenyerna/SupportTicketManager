@@ -3,7 +3,7 @@
 public class TicketManager
 {
 	const string CommaPlaceholder = "[COMMA]";
-	public List<Ticket> _tickets {get; private set; } = [];
+	List<Ticket> _tickets = [];
 
 	// Methods
 
@@ -16,14 +16,14 @@ public class TicketManager
 	// Attempts to remove a ticket by ID, returns true if successful
 	public bool RemoveTicket(string id)
 	{
-		Ticket? t = _tickets.Find(t => t.ID == id);
+		Ticket? t = _tickets.Find(t => t.Id == id);
 		return t == null ? false : _tickets.Remove(t);
 	}
 
 	// Find and return a ticket by ID, returns null if no ticket is found
 	public Ticket? FindTicket(string id)
 	{
-		return _tickets.Find(t => t.ID == id);
+		return _tickets.Find(t => t.Id == id);
 	}
 
 	// Displays summaries of all tickets
@@ -53,9 +53,11 @@ public class TicketManager
 		// Add each ticket as its own row
 		foreach (Ticket t in _tickets)
 		{
-			// Replace commas with a placeholder to avoid issues when reading files
-			string id = t.ID.Replace(",", CommaPlaceholder);
+			// Replace commas with a placeholder value to avoid issues when reading files
+			string id = t.Id.Replace(",", CommaPlaceholder);
 			string description = t.Description.Replace(",", CommaPlaceholder);
+
+			// Convert ticket data to a string
 			string line = $"{id},{description},{t.Priority},{t.Status},{t.DateCreated}";
 			ticketData.Add(line);
 		}

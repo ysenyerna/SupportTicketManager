@@ -112,9 +112,25 @@ do
 // Prompts the user to add a new ticket
 void AddTicket()
 {
-	// Get information
-	string id = GetInput<string>("Enter ticket ID: ");
-	string description = GetInput<string>("Enter ticket description: ");
+	// Get a unique ID
+	string id;
+	while (true)
+	{
+		id = GetInput<string>("Enter ticket ID: ");
+
+		// Check that the ID is valid and unique
+		if (string.IsNullOrWhiteSpace(id)) {
+			WriteColoredLine("ID cannot be empty!", ConsoleColor.Red);
+			continue; }
+		if (tm.FindTicket(id) != null) {
+			WriteColoredLine($"There is already a ticket with the ID '{id}'! ID must be unique.", ConsoleColor.Red);
+			continue; }
+		break;
+	}
+
+	string description;
+	while (string.IsNullOrWhiteSpace(description = GetInput<string>("Enter ticket description: ")))
+		WriteColoredLine("Description cannot be empty!", ConsoleColor.Red);
 
 	int intPriority;
 	while ((intPriority = GetInput<int>("Enter priority level (1 - Low, 2 - Medium, 3 - High): ", "Input must be a number!")) < 1 || intPriority > 3)
@@ -147,10 +163,7 @@ static T GetInput<T>(string message, string? errorMessage = null)
 			return (T)(object)(doubleValue);
 
 		// Print an error message
-		if (errorMessage == null)
-			WriteColoredLine("Invalid Input! Please try again.", ConsoleColor.Red);
-		else
-			WriteColoredLine(errorMessage, ConsoleColor.Red);
+		WriteColoredLine(errorMessage ?? "Invalid Input! Please try again.", ConsoleColor.Red);
 	}
 }
 

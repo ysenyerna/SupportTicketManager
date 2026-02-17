@@ -2,10 +2,25 @@
 
 public class Ticket
 {
-	// Unique identifier
-	public string ID { get; private set; }
+	// ID
+	string _id = "";
+	public string Id { get { return _id; } private set {
+			if (string.IsNullOrWhiteSpace(value.Trim()))
+				throw new ArgumentException("ID cannot be empty");
+			_id = value.Trim();
+		}
+	}
+
 	// Description 
-	public string Description { get; private set; }
+	private string _description = "";
+	public string Description { get {return _description; } private set
+		{
+			if (string.IsNullOrWhiteSpace(value.Trim()))
+				throw new ArgumentException("Description cannot be empty");
+			_description = value.Trim();
+		}
+	}
+
 	// Priority level
 	public enum PriorityLevel { Low = 1, Medium = 2, High = 3 }
 	public PriorityLevel Priority { get; private set; }
@@ -16,11 +31,11 @@ public class Ticket
 	public DateTime DateCreated { get; private set; }
 
 	// Constructors
-	public Ticket() : this("", "N/A", PriorityLevel.Low, TicketStatus.Open) {}
+	public Ticket() : this("N/A", "N/A", PriorityLevel.Low, TicketStatus.Open) {}
 
 	public Ticket(string id, string description, PriorityLevel priority, TicketStatus status, DateTime? dateCreated = null)
 	{
-		ID = id;
+		Id = id;
 		Description = description;
 		Priority = priority;
 		Status = status;
@@ -48,6 +63,6 @@ public class Ticket
 	// Returns a formatted summary of the ticket
 	public string GetSummary()
 	{
-		return $"[{ID}] ({Priority}) - {Description} | Status: {Status} | Created: {DateCreated:yyyy-MM-dd}";
+		return $"[{Id}] ({Priority}) - {Description} | Status: {Status} | Created: {DateCreated:yyyy-MM-dd}";
 	}
 }
